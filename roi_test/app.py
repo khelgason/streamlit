@@ -7,22 +7,33 @@ st.title("ROI Calculator for Sports Team SaaS")
 # Sidebar inputs
 st.sidebar.header("Input Parameters")
 
-# Define input sliders
-num_players = st.sidebar.slider("Number of Players", min_value=10, max_value=500, value=100)
-num_orders = st.sidebar.slider("Number of Orders per Player", min_value=1, max_value=100, value=10)
-transaction_fee = st.sidebar.slider("Transaction Fee (in %)", min_value=0.0, max_value=10.0, value=2.5, step=0.1)
+# Define Club input widgets
+st.sidebar.subheader("Club Parameters")
+num_players = st.sidebar.slider("Number of Players", min_value=10, max_value=2000, value=500, step=5)
+num_orders = st.sidebar.slider("Number of Orders per Month", min_value=1, max_value=1000, value=400)
+transaction_fee_avg = st.sidebar.slider("Avg. Transaction Fee", min_value=1, max_value=100, value=20, step=5)
+
+# Hourly rates
+st.sidebar.subheader("Cost Parameters")
+cost_per_hour_coach = st.sidebar.number_input("Coach Avg. Hourly Rate", min_value=0, value=15)
+cost_per_hour_admin = st.sidebar.number_input("Admin Avg. Hourly Rate", min_value=0, value=15)
+cost_per_hour_guardian = st.sidebar.number_input("Guardian Avg. Hourly Rate", min_value=0, value=15)
+net_transaction = st.toggle("Use Net Transaction Fees", value=1)
+
+if net_transaction:
+    st.write("Net fees activated!")
+  
+# Multiplier definitions
+coaches_per_100 = 4.2    # Multiplier for coach for each 100 players
+admin_per_100 = 0.9      # Multiplier for admin for each 100 players
+guardians_per_100 = 110  # Multiplier for guardians for each 100 players
 
 # Calculations
-time_saved_coach = num_players * 10  # hours saved
-time_saved_admin = num_players * 5   # hours saved
-time_saved_guardians = num_players * 2 # hours saved
-better_collection_rate = num_orders * num_players * 0.05  # improvement in collection rate
-total_fee_collected = num_orders * num_players * (transaction_fee / 100)
-
-# Assuming costs for time (can be adjusted)
-cost_per_hour_coach = 50  # dollars per hour
-cost_per_hour_admin = 25  # dollars per hour
-cost_per_hour_guardian = 15  # dollars per hour
+time_saved_coach = num_players * coaches_per_100/100  # hours saved by coach
+time_saved_admin = num_players * admin_per_100/100  # hours saved by admin
+time_saved_guardians = num_players * guardians_per_100/100  # hours saved by guardians
+better_collection_rate = num_orders * 12 * 0.05  # Annual improvement in collection rate
+total_fee_collected = num_orders * transaction_fee_avg
 
 # Total savings
 total_savings = (time_saved_coach * cost_per_hour_coach +
